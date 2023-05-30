@@ -1,10 +1,18 @@
 <?php
-
+/***********************************
+ * 프로젝트명        : laravel_board
+ * 디렉토리          : Controllers
+ * 파일명            : BoardsController.php
+ * 이력              : v001 0526 SH.Yun new
+ *                    v002 0530 SH.Yun 유효성 체크 추가
+ ***********************************/
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Validator; // v002 add
 
 use App\Models\Boards;
 
@@ -39,6 +47,13 @@ class BoardsController extends Controller
      */
     public function store(Request $req)
     {
+        // v002 add start (유효성 체크)
+        $req->validate([
+            'title' => 'required|between:3,30'
+            , 'content' => 'required|max:1000'
+        ]);
+        // v002 add end
+
         // 작성페이지
         $boards = new Boards([      // insert 할때 new 사용
             'title' => $req->input('title')
@@ -84,6 +99,20 @@ class BoardsController extends Controller
      */
     public function update(Request $req, $id)
     {
+        // v002 add start (유효성 체크 방법 1 => 오류뜨면 무조건 return)
+        // id를 req 객체에 병합
+        $arr = ['id' => $id];
+        // $req->merge($arr);
+        $req->request->add($arr); // merge를 풀어서 적은것
+
+        $req->validate([
+            'title' => 'required|between:3,30'
+            , 'content' => 'required|max:1000'
+            , 'id' => 'required|integer' // v002 add
+        ]);
+        // v002 add end
+
+
         // 쿼리빌더
         // DB::table('Boards')->where('id','=', $id)->update([
         //     'title'=> $req->title
@@ -93,18 +122,37 @@ class BoardsController extends Controller
         // return view('detail')->with('data',$boards);
 
         // 첫번째 방법
-        // $result = Boards::find($id);
-        // $result->title = $req->title;
-        // $result->content = $req->content;
-        // $result->save();
-        // // return view('detail')->with('data',Boards::findOrFail($id));  // 업데이트할때 오류가 떴을때 $req로 받으면 오류가 나서 id를 select하기(오류가 안나면 $req랑 $id 값이 똑같음)
+        $result = Boards::find($id);
+        $result->title = $req->title;
+        $result->content = $req->content;
+        $result->save();
+        // return view('detail')->with('data',Boards::findOrFail($id));  // 업데이트할때 오류가 떴을때 $req로 받으면 오류가 나서 id를 select하기(오류가 안나면 $req랑 $id 값이 똑같음)
         // return redirect('/boards/'.$id);
-        // // return redirect()->route('boards.show', ['board' => $id]); // 위랑 밑 둘 중에 아무거나 가능
+        return redirect()->route('boards.show', ['board' => $id]);
+        // return redirect()->route('boards.show', ['board' => $id]); // 위랑 밑 둘 중에 아무거나 가능
         
         // 두번째 방법
         // $boards = Boards::find($id);
-        Boards::find($id)->update(['title'=> $req->title, 'content'=> $req->content]);
-        return redirect('/boards/'.$id);
+        // Boards::find($id)->update(['title'=> $req->title, 'content'=> $req->content]);
+        // return redirect('/boards/'.$id);
+
+
+
+
+
+        // 유효성 검사 방법 2(리턴안되고 계속 진행하는 방식)
+        $validator = Validator::make(
+            $request->only('id', 'title', 'content')
+            , [
+                'title' => 'required|between:3,30'
+                , 'content' => 'required|max:1000'
+                , 'id' => 'required|integer'
+            ]
+        );
+
+        if($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput($request->only('title', 'content')); // back() : 이전의 페이지로 리다이렉트 해줌, withInput() : request의 정보를 session에 올림
+        }
     }
 
     /**

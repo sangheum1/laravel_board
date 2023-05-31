@@ -5,11 +5,7 @@
 @section('contents')
     <h2>login</h2>
     @include('layout.errorsvalidate')
-    <div>{{isset($success) ? $success : ""}}</div>
-
-    @if(session('success'))
-        <div>{{session('success')}}</div>
-    @endif
+    <div>{!!session()->has('success') ? session('success') : ""!!}</div>
     <form action="{{route('users.login.post')}}" method="post">
         @csrf
         <label for="email">Email : </label>

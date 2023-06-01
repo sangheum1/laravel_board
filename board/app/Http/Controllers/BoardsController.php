@@ -147,7 +147,7 @@ class BoardsController extends Controller
 
         // 유효성 검사 방법 2(리턴안되고 계속 진행하는 방식)
         $validator = Validator::make(
-            $request->only('id', 'title', 'content')
+            $req->only('id', 'title', 'content')
             , [
                 'title' => 'required|between:3,30'
                 , 'content' => 'required|max:1000'
@@ -156,7 +156,7 @@ class BoardsController extends Controller
         );
 
         if($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput($request->only('title', 'content')); // back() : 이전의 페이지로 리다이렉트 해줌, withInput() : request의 정보를 session에 올림
+            return redirect()->back()->withErrors($validator)->withInput($req->only('title', 'content')); // back() : 이전의 페이지로 리다이렉트 해줌, withInput() : request의 정보를 session에 올림
         }
     }
 

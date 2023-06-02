@@ -17,11 +17,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\session;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     function login() {
-        return view('login');
+        // $arr['key'] = 'test';
+        // $arr['kim'] = 'park';
+        // Log::emergency('emergency', $arr);
+        // Log::alert('alert', $arr);
+        // Log::critical('critical', $arr);
+        // Log::error('error', $arr);
+        // Log::warning('warning', $arr);
+        // Log::notice('notice', $arr);
+        // Log::info('info', $arr);
+        // Log::debug('debug', $arr); // .env 에서 stack => daily로 변경해서 오류 확인하고 싶을때 사용 그리고 log_level : warning설정
+        return view('Iogin');
     }
 
     function loginpost(Request $req) {
@@ -43,7 +54,7 @@ class UserController extends Controller
         // 인증이 맞는지 check : true,false 리턴
         if(Auth::check()) {
             session($user->only('id')); // 세션에 인증된 회원 pk 등록
-            return redirect()->intended(route('boards.index')); // intended : 필요한 데이터들 빼고 clear 시켜줌
+            return redirect()->intended(route('boards.index')); // intended : 필요한 데이터들 빼고 clear 시켜줌(인증이 되었을 경우 middleware로 가는거고 middleware에 설정 안했으면 boards.index로 넘어감)
         } else {
             $error = '인증작업 에러';
             return redirect()->back()->with('error', $error);
@@ -69,11 +80,11 @@ class UserController extends Controller
         $user = User::create($data); // insert하는법
         if(!$user) {
             $error = '시스템 에러가 발생하여 회원가입에 실패했습니다.<br>잠시후 재시도 해주시기 바랍니다.';
-            return redirect()->route('users.registration')->with('error', $error); // $errors는 배열이라 collect로 객체화 시켜주기
+            return redirect()->route('users.registration')->with('error', $error);
         }
 
         // 회원가입 완료 로그인 페이지로 이동
-        return redirect()->route('users.login')->with('success' , '가입하신 이메일로 로그인후 사용해 주시기 바랍니다.');
+        return redirect()->route('users.login')->with('success' , '가입하신 이메일로 로그인후 사용해 주시기 바랍니다.'); // 세션에 값을 넣음
 
     }
 

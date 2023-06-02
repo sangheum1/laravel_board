@@ -92,7 +92,7 @@ class BoardsController extends Controller
     {
         // 수정 페이지 출력
         $boards = Boards::find($id);
-        return view('edit')->with('data', $boards);
+        return view('edit')->with('data', $boards); // view에 데이터 넣음 (redirect with()는 재요청을 보내는거기 때문에 데이터를 서버에 보내고 다시 요청으로 주소로 보내기 때문에 기존에 있던 data변수는 사라지면서 세션으로 사용하고 view는 데이터를 서버를 통해 그냥 바로 화면으로 보여주는 거기때문에 data라는 변수가 남아있음)
     }
 
     /**

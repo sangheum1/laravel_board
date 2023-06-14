@@ -13,9 +13,13 @@
         <label for="email">Email : </label>
         <input type="text" name="email" id="email" value="{{count($errors) > 0 ? old('title') : $data->email}}">
         <br>
-        <label for="password">password : </label>
+        <label for="bpassword">Before password : </label>
+		<input type="password" name="bpassword" id="bpassword">
+        <br>
+        <label for="password">new password : </label>
         <input type="password" name="password" id="password">
-        <label for="passwordchk">password : </label>
+        <br>
+        <label for="passwordchk">새 password 체크 : </label>
         <input type="password" name="passwordchk" id="passwordchk">
         <br><br>
         <button type="submit">수정하기</button>
